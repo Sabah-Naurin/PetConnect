@@ -1,7 +1,3 @@
-/* ========================================================
-   user_dashboard.css — Styles from user_dashboard.html
-   ======================================================== */
-
 /* Dashboard sidebar nav */
 .sidebar-nav-list { display: flex; flex-direction: column; gap: 0.5rem; }
 .sidebar-nav-back {
