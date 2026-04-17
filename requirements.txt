@@ -1,0 +1,6 @@
+Django>=4.0
+Pillow
+torch
+torchvision
+transformers
+django-cors-headers
