@@ -1,7 +1,3 @@
-/* =============================================
-   post_a_pet.css — Styles from post_a_pet.html
-   ============================================= */
-
 /* Report type select – highlighted border */
 .report-type-select {
     border-color: var(--primary);
