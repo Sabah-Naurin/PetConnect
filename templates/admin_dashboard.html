@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard - PetConnect{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+{% endblock %}
+
+{% block sidebar %}
+<nav>
+    <div class="logo-container" style="margin-bottom: 2rem;">
+        <span class="admin-badge" style="background: #e0f2fe; color: #0ea5e9; font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 12px; font-weight: bold; text-transform: uppercase;">Admin Portal</span>
+    </div>
+    
+    <ul style="display: flex; flex-direction: column; gap: 0.5rem; list-style: none; padding: 0;">
+        <li style="padding: 0.5rem; {% if tab == 'dashboard' %}background: #f1f5f9; border-radius: 8px;{% endif %}">
+            <a href="{% url 'custom_admin_dashboard' %}?tab=dashboard" style="display: flex; justify-content: space-between; align-items: center; text-decoration: none; color: {% if tab == 'dashboard' %}#0f172a{% else %}#64748b{% endif %}; font-weight: {% if tab == 'dashboard' %}600{% else %}normal{% endif %};">
+                Dashboard 
+                <span class="badge" style="background: #ef4444; color: white; padding: 0.1rem 0.5rem; border-radius: 12px; font-size: 0.75rem;">{{ pending_count }}</span>
+            </a>
+        </li>
+        <li style="padding: 0.5rem; {% if tab == 'claims' %}background: #f1f5f9; border-radius: 8px;{% endif %}">
+            <a href="{% url 'custom_admin_dashboard' %}?tab=claims" style="text-decoration: none; color: {% if tab == 'claims' %}#0f172a{% else %}#64748b{% endif %}; font-weight: {% if tab == 'claims' %}600{% else %}normal{% endif %};">Ownership Claims</a>
+        </li>
+        <li style="padding: 0.5rem; {% if tab == 'funds' %}background: #f1f5f9; border-radius: 8px;{% endif %}">
+            <a href="{% url 'custom_admin_dashboard' %}?tab=funds" style="text-decoration: none; color: {% if tab == 'funds' %}#0f172a{% else %}#64748b{% endif %}; font-weight: {% if tab == 'funds' %}600{% else %}normal{% endif %};">Fund Proofs</a>
+        </li>
+        <li style="padding: 0.5rem; {% if tab == 'rescues' %}background: #f1f5f9; border-radius: 8px;{% endif %}">
+            <a href="{% url 'custom_admin_dashboard' %}?tab=rescues" style="text-decoration: none; color: {% if tab == 'rescues' %}#0f172a{% else %}#64748b{% endif %}; font-weight: {% if tab == 'rescues' %}600{% else %}normal{% endif %};">Rescue Verifications</a>
+        </li>
+    </ul>
+</nav>
+{% endblock %}
+
+{% block content %}
+    <div class="header" style="margin-bottom: 2rem;">
+        <h1 style="font-size: 2rem; margin: 0; color: #0f172a;">
+            {% if tab == 'dashboard' %}Pending Actions
+            {% elif tab == 'claims' %}All Ownership Claims
+            {% elif tab == 'funds' %}All Fund Proofs
+            {% elif tab == 'rescues' %}All Rescue Verifications
+            {% endif %}
+        </h1>
+    </div>
+
+    {% if tab == 'dashboard' or tab == 'claims' %}
+    {% if tab == 'dashboard' %}<h2 style="color: #334155; margin-bottom: 1rem; font-size: 1.25rem;">Ownership Claims</h2>{% endif %}
+    
+    {% for claim in claims_list %}
+    <div class="admin-card">
+        <div class="card-header">
+            <div class="req-type">
+                {% if claim.claim_type == 'ML Match' %}🔍 ML Match{% else %}👤 Manual{% endif %} Claim
+            </div>
+            <div class="req-meta">Requested by: <b>{{ claim.owner.username }}</b></div>
+        </div>
+        <div class="compare-grid">
+            <div class="compare-box">
+                <span class="compare-label">Original Lost Post</span>
+                <a href="/report/{{ claim.lost_report.base_report.id }}/" target="_blank" class="compare-link">
+                    {% if claim.lost_report.base_report.image %}
+                        <img src="{{ claim.lost_report.base_report.image.url }}" alt="Lost Pet" class="compare-img">
+                    {% endif %}
+                    <div class="compare-data">
+                        <strong>{{ claim.lost_report.pet_name }}</strong> ({{ claim.lost_report.breed }})<br>
+                        Lost in {{ claim.lost_report.base_report.location }}
+                    </div>
+                </a>
+            </div>
+            <div class="compare-box" {% if claim.claim_type == 'ML Match' %}style="border-color: var(--primary);"{% endif %}>
+                <span class="compare-label">Sighting Result</span>
+                <a href="/report/{{ claim.sighting_report.base_report.id }}/" target="_blank" class="compare-link">
+                    {% if claim.sighting_report.base_report.image %}
+                        <img src="{{ claim.sighting_report.base_report.image.url }}" alt="Sighted Pet" class="compare-img">
+                    {% endif %}
+                    <div class="compare-data">
+                        <strong>{{ claim.sighting_report.base_report.species|title }}</strong><br>
+                        Sighted in {{ claim.sighting_report.base_report.location }}
+                    </div>
+                </a>
+            </div>
+        </div>
+        
+        {% if claim.approval_status == 'Pending' %}
+        <form method="POST" action="{% url 'verify_claim' claim.id %}" class="action-group">
+            {% csrf_token %}
+            <button type="submit" name="action" value="reject" class="btn btn-reject">Reject</button>
+            <button type="submit" name="action" value="approve" class="btn btn-approve">Approve</button>
+        </form>
+        {% else %}
+        <div class="action-group">
+           <span class="badge" style="background: {% if claim.approval_status == 'Approved' %}#22c55e{% else %}#ef4444{% endif %}; color: white; padding: 0.4rem 1rem; border-radius: 6px; font-weight:bold;">{{ claim.approval_status }}</span>
+        </div>
+        {% endif %}
+    </div>
+    {% empty %}
+        <p style="color: #64748b; margin-bottom: 2.5rem; background: #f8fafc; padding: 1rem; border-radius: 8px; border: 1px dashed #cbd5e1;">No {% if tab == 'dashboard' %}pending{% endif %} ownership claims.</p>
+    {% endfor %}
+    {% endif %}
+
+    {% if tab == 'dashboard' or tab == 'funds' %}
+    {% if tab == 'dashboard' %}<h2 style="color: #334155; margin-bottom: 1rem; font-size: 1.25rem;">Fund Proofs</h2>{% endif %}
+
+    {% for fund in funds_list %}
+    <div class="admin-card">
+        <div class="card-header">
+            <div class="req-type">🏥 Fund Verification</div>
+            <div class="req-meta">Requested by: <b>{{ fund.sighting_report.current_custodian.username }}</b></div>
+        </div>
+        <div style="margin-bottom: 1.5rem;">
+            <strong>Condition:</strong> {{ fund.current_condition }}<br>
+            <span style="color: #64748b; font-size: 0.85rem;">Goal: {{ fund.target_amount }} BDT</span>
+            <div style="margin-top: 0.5rem;">
+                <a href="/report/{{ fund.sighting_report.base_report.id }}/" target="_blank" style="text-decoration: underline; color: var(--primary); font-size: 0.9rem; font-weight: 500;">View Original Rescue Post ➔</a>
+            </div>
+            <p style="font-size: 0.9rem; margin-top: 0.5rem; color: #475569; font-style: italic;">"{{ fund.rescuers_note }}"</p>
+        </div>
+        
+        <div class="proof-box">
+            <span>📄</span>
+            {% if fund.prescription_image %}
+                <a href="{{ fund.prescription_image.url }}" target="_blank" class="proof-link">View Vet Prescription/Bill</a>
+            {% else %}
+                <span style="color: #64748b;">No prescription provided.</span>
+            {% endif %}
+        </div>
+        
+        {% if fund.approval_status == 'Pending' %}
+        <form method="POST" action="{% url 'verify_fund' fund.id %}" class="action-group">
+            {% csrf_token %}
+            <button type="submit" name="action" value="reject" class="btn btn-reject">Deny</button>
+            <button type="submit" name="action" value="approve" class="btn btn-approve">Verify</button>
+        </form>
+        {% else %}
+        <div class="action-group">
+           <span class="badge" style="background: {% if fund.approval_status == 'Approved' %}#22c55e{% else %}#ef4444{% endif %}; color: white; padding: 0.4rem 1rem; border-radius: 6px; font-weight:bold;">{{ fund.approval_status }}</span>
+        </div>
+        {% endif %}
+    </div>
+    {% empty %}
+        <p style="color: #64748b; margin-bottom: 2.5rem; background: #f8fafc; padding: 1rem; border-radius: 8px; border: 1px dashed #cbd5e1;">No {% if tab == 'dashboard' %}pending{% endif %} fund requests.</p>
+    {% endfor %}
+    {% endif %}
+
+    {% if tab == 'dashboard' or tab == 'rescues' %}
+    {% if tab == 'dashboard' %}<h2 style="color: #334155; margin-bottom: 1rem; font-size: 1.25rem;">Rescue Verifications</h2>{% endif %}
+
+    {% for rescue in rescues_list %}
+    <div class="admin-card">
+        <div class="card-header">
+            <div class="req-type">🦸‍♂️ Rescue Proof</div>
+            <div class="req-meta">Submitted by: <b>{{ rescue.rescuer.username }}</b></div>
+        </div>
+        
+        <div style="margin-bottom: 1.5rem;">
+            <strong>Animal:</strong> {{ rescue.sighting.base_report.species|title }}<br>
+            <strong>Location:</strong> {{ rescue.sighting.base_report.location }}<br>
+            <div style="margin-top: 0.5rem;">
+                <a href="/report/{{ rescue.sighting.base_report.id }}/" target="_blank" style="text-decoration: underline; color: var(--primary); font-size: 0.9rem; font-weight: 500;">View Original Rescue Post ➔</a>
+            </div>
+        </div>
+        
+        <div class="proof-box">
+            <span>📸</span>
+            {% if rescue.proof_image %}
+                <a href="{{ rescue.proof_image.url }}" target="_blank" class="proof-link">View Rescue Photo/Proof</a>
+            {% else %}
+                <span style="color: #64748b;">No image provided.</span>
+            {% endif %}
+        </div>
+        
+        {% if rescue.status == 'Pending' %}
+        <form method="POST" action="{% url 'verify_rescue' rescue.id %}" class="action-group">
+            {% csrf_token %}
+            <button type="submit" name="action" value="reject" class="btn btn-reject">Reject</button>
+            <button type="submit" name="action" value="approve" class="btn btn-approve">Verify Custody</button>
+        </form>
+        {% else %}
+        <div class="action-group">
+           <span class="badge" style="background: {% if rescue.status == 'Verified' %}#22c55e{% else %}#ef4444{% endif %}; color: white; padding: 0.4rem 1rem; border-radius: 6px; font-weight:bold;">{{ rescue.status }}</span>
+        </div>
+        {% endif %}
+    </div>
+    {% empty %}
+        <p style="color: #64748b; margin-bottom: 2.5rem; background: #f8fafc; padding: 1rem; border-radius: 8px; border: 1px dashed #cbd5e1;">No {% if tab == 'dashboard' %}pending{% endif %} rescue verifications.</p>
+    {% endfor %}
+    {% endif %}
+
+{% endblock %}

@@ -1,0 +1,213 @@
+/* =============================================
+   fund_detail.css — Styles from fund_detail.html
+   ============================================= */
+
+/* Main Container */
+.post-container {
+    background: var(--white);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Image & Badge */
+.post-image {
+    width: 100%;
+    height: 350px;
+    background: #cbd5e1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+.post-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.status-badge {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: #dcfce7;
+    color: #15803d;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    z-index: 2;
+}
+
+.post-content { padding: 2rem; }
+.post-content h1 { margin: 0 0 0.5rem 0; font-size: 1.8rem; color: #0f172a; }
+.post-meta { color: #64748b; font-size: 0.95rem; margin-bottom: 1.5rem; }
+
+/* Linked Post Banner */
+.origin-link {
+    background: #f0f9ff;
+    border: 1px dashed #7dd3fc;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 0.9rem;
+}
+.origin-link-icon { font-size: 1.2rem; }
+.origin-link-text { color: #0369a1; }
+.origin-link a { color: var(--primary); font-weight: 700; text-decoration: none; }
+.origin-link a:hover { text-decoration: underline; }
+
+/* Progress Bar */
+.progress-wrapper { margin-bottom: 2rem; }
+.progress-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+.progress-raised { color: var(--success); }
+.progress-goal { color: #64748b; }
+.progress-bar {
+    width: 100%;
+    background: #e2e8f0;
+    border-radius: 99px;
+    height: 12px;
+    overflow: hidden;
+}
+.progress-fill {
+    background: var(--success);
+    height: 100%;
+    border-radius: 99px;
+    transition: width 0.5s ease;
+}
+
+/* Data Grid */
+.data-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    background: #f8fafc;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--border);
+}
+.data-item { display: flex; flex-direction: column; gap: 0.3rem; }
+.data-label {
+    font-size: 0.75rem;
+    color: #64748b;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.data-value { font-weight: 600; color: #0f172a; }
+.data-value-danger { color: #ef4444; font-weight: 600; }
+.proof-link {
+    color: var(--primary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-top: 0.2rem;
+}
+.proof-link:hover { text-decoration: underline; }
+
+/* Rescuer's Note */
+.rescuers-note-section { margin-bottom: 2rem; }
+.rescuers-note-label { display: block; margin-bottom: 0.5rem; }
+.rescuers-note-text { margin: 0; line-height: 1.6; color: #334155; }
+
+/* Donation Box */
+.donation-box {
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    background: #f8fafc;
+}
+.donation-box h3 {
+    margin-top: 0;
+    color: #0f172a;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.instruction-step {
+    font-size: 0.95rem;
+    color: #334155;
+    margin-bottom: 0.8rem;
+    line-height: 1.5;
+}
+.bkash-number {
+    background: #e0245e;
+    color: white;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+.input-group {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+}
+.input-group input {
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.95rem;
+}
+.input-group input:focus {
+    outline: 2px solid var(--success);
+    outline-offset: -1px;
+}
+.btn-donate {
+    width: 100%;
+    background: var(--success);
+    color: white;
+    padding: 1rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    text-align: center;
+}
+.btn-donate:hover { background: #059669; }
+.disclaimer {
+    font-size: 0.75rem;
+    color: #64748b;
+    text-align: center;
+    margin-top: 1rem;
+}
+
+/* Back link wrapper */
+.fund-back-link-wrapper {
+    max-width: 800px;
+    margin: 0 auto 1rem;
+}
+.fund-back-link {
+    color: #64748b;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Fallback paw icon */
+.paw-placeholder { font-size: 4rem; }

@@ -1,0 +1,64 @@
+/* ======================================================
+   rescue_verification.css — Styles from rescue_verification.html
+   ====================================================== */
+
+/* Pet summary card */
+.pet-summary-card {
+    background: #f8fafc;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.pet-summary-thumb {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: #e2e8f0;
+}
+.pet-summary-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.pet-summary-thumb-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+.pet-summary-title { color: #0f172a; display: block; font-size: 1.05rem; }
+.pet-summary-sub { color: var(--text-muted); font-size: 0.9rem; }
+
+/* Upload label */
+.upload-label { font-size: 0.95rem; font-weight: 700; color: #1e293b; margin-bottom: 0.5rem; display: block; }
+.upload-hint { font-size: 0.85rem; color: #475569; margin-top: 0; margin-bottom: 1rem; }
+.upload-input {
+    width: 100%;
+    padding: 1rem;
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px;
+    background: #f8fafc;
+    cursor: pointer;
+}
+
+/* Warning box */
+.warn-box {
+    background: #fffbeb;
+    border-left: 4px solid #f59e0b;
+    padding: 1rem;
+    font-size: 0.85rem;
+    color: #92400e;
+    line-height: 1.5;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 2rem;
+}
+
+/* Form container override for smaller width */
+.form-container-sm { max-width: 600px; }
+
+/* Cancel link */
+.btn-cancel-link { text-decoration: none; }

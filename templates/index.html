@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/index.css' %}">
+{% endblock %}
+
+{% block content %}
+<h1 class="index-page-title">Local Pet Activity</h1>
+<div class="grid">
+    {% for report in reports %}
+    <a href="{% url 'report_detail' report.id %}" class="card">
+        <div class="card-img">
+            {% if report.report_type == 'Lost' %}
+                <span class="status-badge status-lost">Lost</span>
+            {% elif report.report_type == 'Sighting' %}
+                <span class="status-badge status-sighting">{% if report.is_sighting_update %}Sighting Update{% else %}Sighting{% endif %}</span>
+            {% elif report.report_type == 'Rescue Needed' %}
+                <span class="status-badge status-rescue">{% if report.is_sighting_update %}Rescue Update{% else %}Rescue Needed{% endif %}</span>
+            {% elif report.report_type == 'Adoption' %}
+                <span class="status-badge status-adoption">Adoption</span>
+            {% endif %}
+            
+            {% if report.image %}
+                <img src="{{ report.image.url }}" alt="{{ report.pet_name }}">
+            {% else %}
+                <span class="empty-paw-icon">🐾</span>
+            {% endif %}
+        </div>
+        <div class="card-body">
+            <p class="card-title">{{ report.pet_name|default:report.species }}</p>
+            <div class="tags-container">
+                <span class="tag">{{ report.species }}</span>
+                <span class="tag">{{ report.location }}</span>
+                {% if report.breed %}<span class="tag">{{ report.breed }}</span>{% endif %}
+            </div>
+            <p class="card-timestamp">
+               {{ report.timestamp|timesince }} ago
+            </p>
+        </div>
+    </a>
+    {% empty %}
+    <div class="empty-state">
+        <p class="empty-state-title">No active reports in your area.</p>
+        <p>Be the first to create one!</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

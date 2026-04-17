@@ -1,0 +1,487 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ report.pet_name }} - PetConnect{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/report_detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="rd-back-link-wrapper">
+    <a href="{% url 'index' %}" class="rd-back-link">⬅ Back to Feed</a>
+</div>
+
+{% if ml_lost_report %}
+<div class="match-banner"
+    style="background: #fffbeb; border: 1px solid #fde68a; padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+    <span class="ai-badge"
+        style="background: #f59e0b; color: white; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 800;">ML
+        MODEL ALERT</span>
+    <span style="font-weight: 500; color: #92400e;">This sighting is an <b>{{ ml_score }}% match</b> with your lost pet
+        report for "{{ ml_lost_report.pet_name }}".</span>
+</div>
+{% endif %}
+
+<div class="post-container">
+    <div class="post-image">
+        {% if report.report_type == 'Lost' %}
+        <span class="badge-abs badge-lost">Lost Pet</span>
+        {% elif report.report_type == 'Sighting' %}
+        <span class="badge-abs badge-sighting">
+            {% if sighting_update_info %}Sighting Update{% else %}Sighting{% endif %}
+        </span>
+        {% elif report.report_type == 'Rescue Needed' %}
+        <span class="badge-abs badge-rescue">
+            {% if sighting_update_info %}Rescue Update{% else %}Rescue Needed{% endif %}
+        </span>
+        {% elif report.report_type == 'Adoption' %}
+        <span class="badge-abs badge-adoption">Adoption</span>
+        {% endif %}
+
+        {% if report.image %}
+        <img src="{{ report.image.url }}" alt="{{ report.pet_name }}">
+        {% else %}
+        <span class="post-paw-placeholder">🐾</span>
+        {% endif %}
+    </div>
+
+    <div class="post-content">
+        {% if report.report_type == 'Lost' %}
+        <h1>{{ report.pet_name }} is Missing</h1>
+        {% elif report.report_type == 'Adoption' %}
+        <h1>Meet {{ report.pet_name }}</h1>
+        {% else %}
+        <h1>{% if sighting_update_info %}Update for {{ sighting_update_info.pet_name }}{% else %}Spotted
+            {{ report.species }}{% endif %}</h1>
+        {% endif %}
+
+        <div class="post-meta">Location: <b>{{ report.location }}</b> • Posted {{ report.timestamp|timesince }} ago
+        </div>
+
+        <div class="data-grid">
+            <div class="data-item">
+                <span class="data-label">Species &amp; Primary Color</span>
+                <span class="data-value">{{ report.species }} • {{ report.primary_color }}</span>
+            </div>
+
+            {% if report.report_type == 'Lost' %}
+            <div class="data-item">
+                <span class="data-label">Breed &amp; Gender</span>
+                <span class="data-value">{{ report.lost_report.breed }} •
+                    {{ report.lost_report.gender }}</span>
+            </div>
+            <div class="data-item">
+                <span class="data-label">Age</span>
+                <span class="data-value">{{ report.lost_report.age}} Year</span>
+            </div>
+            <div class="data-item">
+                <span class="data-label">Lost Date &amp; Time</span>
+                <span class="data-value">{{ report.lost_report.date_lost }} • {{ report.lost_report.time_lost }}</span>
+            </div>
+            {% if report.lost_report.special_marks %}
+            <div class="data-item data-item-full">
+                <span class="data-label">Special Marks</span>
+                <span class="data-value">{{ report.lost_report.special_marks }}</span>
+            </div>
+            {% endif %}
+            {% elif report.report_type == 'Sighting' or report.report_type == 'Rescue Needed' %}
+            <div class="data-item">
+                <span class="data-label">Condition</span>
+                <span class="data-value">{{ report.sighting_report.condition }}</span>
+            </div>
+            <div class="data-item">
+                <span class="data-label">Sighted Date &amp; Time</span>
+                <span class="data-value">{{ report.sighting_report.date_sighted }} •
+                    {{ report.sighting_report.time_sighted }}</span>
+            </div>
+            <div class="data-item">
+                <span class="data-label">In Custody?</span>
+                <span class="data-value">{% if report.sighting_report.in_custody %}Yes{% else %}No{% endif %}</span>
+            </div>
+            <div class="data-item">
+                <span class="data-label">Current Custodian</span>
+                <span class="data-value">
+                    {% if report.sighting_report.in_custody %}
+                    {{ report.sighting_report.current_custodian.username }}
+                    {% else %}
+                    None
+                    {% endif %}
+                </span>
+            </div>
+            {% elif report.report_type == 'Adoption' %}
+            <div class="data-item">
+                <span class="data-label">Breed &amp; Gender</span>
+                <span class="data-value">{{ report.adoption_post.breed }} • {{ report.adoption_post.gender }}</span>
+            </div>
+            <div class="data-item">
+                <span class="data-label">Age</span>
+                <span class="data-value">{{ report.adoption_post.age }} Year</span>
+            </div>
+            <div class="data-item">
+                <span class="data-label">Vaccination / Sterilization</span>
+                <span class="data-value">{{ report.adoption_post.vaccination_status }} / {{
+                    report.adoption_post.sterilization_status }}</span>
+            </div>
+            <div class="data-item">
+                <span class="data-label">Status</span>
+                <span class="data-value">{{ report.adoption_post.adoption_status }}</span>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if report.note %}
+        <div class="note-section">
+            <span class="data-label note-label">Note / Description</span>
+            <p class="note-text">"{{ report.note }}"</p>
+        </div>
+        {% endif %}
+
+        {% if report.report_type == 'Adoption' %}
+        <div class="note-section">
+            <span class="data-label note-label">Food Habits</span>
+            <p class="note-text-preline">{{ report.adoption_post.food_habit }}</p>
+        </div>
+        <div class="note-section">
+            <span class="data-label note-label">Adoption Requirements</span>
+            <p class="note-text-preline">{{ report.adoption_post.requirements }}</p>
+        </div>
+        {% endif %}
+
+        {% if report.report_type == 'Lost' %}
+        <div class="timeline-section">
+            <h2 class="timeline-heading">Pet Post History</h2>
+            <div class="timeline">
+                {% for event in timeline %}
+                <div class="timeline-item">
+                    <div class="timeline-dot {% if event.type == 'sighting' %}timeline-dot-alert{% endif %}"></div>
+                    <div class="timeline-date">{{ event.timestamp|date:"F j, Y • h:i A" }}</div>
+                    <div class="timeline-card">
+                        <strong class="timeline-card-title">{{ event.title }}</strong>
+                        <p class="timeline-card-desc">{{ event.description }}</p>
+                        {% if event.type == 'sighting' %}
+                        <a href="{% url 'report_detail' event.report_id %}" class="timeline-view-link">View Sighting
+                            Details ➔</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if sighting_update_info %}
+        <div class="data-grid" style="margin-bottom: 20px; display: block;">
+            <div class="data-item data-item-full">
+                <span class="data-label">Linked Lost Pet</span>
+                <span class="data-value">
+                    Update for <strong>{{ sighting_update_info.pet_name }}</strong> (Owner:
+                    {{sighting_update_info.owner_name }})<br>
+                    <a href="{% url 'report_detail' sighting_update_info.lost_post_id %}"
+                        style="text-decoration: underline; color: var(--primary-color, #0f172a); margin-top: 5px; display: inline-block; font-weight: 500;">View
+                        Original Lost Post ➔</a>
+                </span>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if report.report_type in 'Sighting,Rescue Needed,Adoption' %}
+        <div class="author-box">
+            <div>
+                <div class="author-name">Reported by: {{ report.author.username }}</div>
+                <div class="author-role">
+                    {% if report.report_type == 'Adoption' %}Pet Owner{% else %}Spotter{% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="action-area">
+            {% if report.is_resolved %}
+                {% if request.user == report.author or report.sighting_report and request.user == report.sighting_report.current_custodian %}
+                <div class="btn-resolved-owner">This report is resolved</div>
+                {% else %}
+                <div class="btn-resolved-other">This report has been resolved. Updates are disabled.</div>
+                {% endif %}
+            {% else %}
+                
+                {% if report.report_type == 'Lost' or report.report_type == 'Adoption' %}
+                    {% if request.user == report.author %}
+                        <form action="{% url 'resolve_report' report.id %}" method="post" class="resolve-form">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-primary btn-success">
+                                {% if report.report_type == 'Adoption' %}Mark as Adopted{% else %}Mark as Resolved{% endif %}
+                            </button>
+                        </form>
+                    {% else %}
+                        {% if report.report_type == 'Adoption' %}
+                            <button onclick="document.getElementById('contactModal').style.display='flex'" class="btn-primary btn-adopt-trigger">Adopt</button>
+                        {% else %}
+                            <button onclick="document.getElementById('contactModal').style.display='flex'" class="btn-secondary btn-contact">Contact Info</button>
+                        {% endif %}
+                        {% if report.report_type == 'Lost' %}
+                            <a href="{% url 'post_pet' %}?parent_id={{ report.lost_report.id }}" class="btn-primary btn-sighting">Add Sighting Update</a>
+                        {% endif %}
+                    {% endif %}
+                
+                {% elif report.report_type == 'Sighting' or report.report_type == 'Rescue Needed' %}
+                    {% if report.sighting_report.in_custody and request.user == report.sighting_report.current_custodian %}
+                        <!-- Custodian Role -->
+                        <form action="{% url 'resolve_report' report.id %}" method="post" class="resolve-form">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-primary btn-success">Mark as Resolved</button>
+                        </form>
+                        
+                        {% if report.report_type == 'Rescue Needed' %}
+                            {% if report.sighting_report.fund_request %}
+                                {% if report.sighting_report.fund_request.approval_status == 'Approved' %}
+                                    <a href="{% url 'fund_detail' report.sighting_report.fund_request.id %}" class="btn-primary btn-fund">View Medical Fund</a>
+                                {% else %}
+                                    <button disabled class="btn-primary btn-disabled">Fund Pending Admin Approval</button>
+                                {% endif %}
+                            {% else %}
+                                <a href="{% url 'create_fund_request' report.sighting_report.id %}" class="btn-primary btn-blue">Request Medical Fund</a>
+                            {% endif %}
+                        {% endif %}
+
+                        {% if request.user != report.author %}
+                            <button onclick="document.getElementById('spotterModal').style.display='flex'" class="btn-secondary btn-contact" style="background:#f1f5f9; color:#475569; border-color:#cbd5e1;">Contact Spotter</button>
+                        {% endif %}
+
+                    {% elif not report.sighting_report.in_custody and request.user == report.author %}
+                        <!-- Spotter Role (Pre-Custody) -->
+                        <form action="{% url 'resolve_report' report.id %}" method="post" class="resolve-form">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-primary btn-success">Mark as Resolved</button>
+                        </form>
+
+                        {% if report.report_type == 'Rescue Needed' %}
+                            <!-- Since there is NO custody, the spotter can claim self custody -->
+                            <form action="{% url 'op_rescue' report.id %}" method="post" class="resolve-form">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-primary btn-danger" style="width:100%;">Self-Rescue</button>
+                            </form>
+                        {% endif %}
+
+                    {% else %}
+                        <!-- Spotter Role (Post-Custody) OR General Guest Role -->
+                        {% if report.sighting_report.in_custody %}
+                            <button onclick="document.getElementById('contactModal').style.display='flex'" class="btn-secondary btn-contact">Contact Custodian</button>
+                            {% if report.sighting_report.current_custodian != report.author and request.user != report.author %}
+                                <button onclick="document.getElementById('spotterModal').style.display='flex'" class="btn-secondary btn-contact" style="background:#f1f5f9; color:#475569; border-color:#cbd5e1;">Contact Spotter</button>
+                            {% endif %}
+                        {% else %}
+                            <button onclick="document.getElementById('contactModal').style.display='flex'" class="btn-secondary btn-contact">Contact Spotter</button>
+                        {% endif %}
+
+                        <!-- Authors don't claim their own sightings -->
+                        {% if request.user != report.author %}
+                            <button onclick="document.getElementById('claimModal').style.display='flex'" class="btn-primary btn-outline-primary">Claim Ownership</button>
+                        {% endif %}
+
+                        {% if report.report_type == 'Rescue Needed' %}
+                            {% if report.sighting_report.fund_request %}
+                                {% if report.sighting_report.fund_request.approval_status == 'Approved' %}
+                                    <a href="{% url 'fund_detail' report.sighting_report.fund_request.id %}" class="btn-primary btn-fund">View Medical Fund</a>
+                                {% else %}
+                                    <button disabled class="btn-primary btn-disabled">Fund Pending Admin Approval</button>
+                                {% endif %}
+                            {% else %}
+                                {% if not report.sighting_report.in_custody %}
+                                    <a href="{% url 'submit_rescue_verification' report.id %}" class="btn-primary btn-rescue">Rescue this Pet</a>
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
+
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        </div>
+
+        {% if report.report_type == 'Sighting' or report.report_type == 'Rescue Needed' %}
+        <div id="claimModal" class="modal-overlay">
+            <div class="modal">
+                <div class="modal-header">
+                    <h2>{% if ml_lost_report %}Confirm Match{% else %}Claim Ownership{% endif %}</h2>
+                    <button type="button" onclick="document.getElementById('claimModal').style.display='none'"
+                        class="modal-close">&times;</button>
+                </div>
+
+                <form action="{% url 'claim_ownership' report.id %}" method="POST">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        {% if ml_lost_report %}
+                        <p class="modal-desc" style="color: #475569; margin-bottom: 1.5rem; line-height: 1.5;">Our
+                            system detected a high visual similarity between this sighting and your active lost pet
+                            report. Is this your pet?</p>
+
+                        <div class="ml-match-card"
+                            style="background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; position: relative;">
+                            <div class="ml-badge"
+                                style="position: absolute; top: -10px; right: 15px; background: #8b5cf6; color: white; font-size: 0.7rem; font-weight: 800; padding: 0.2rem 0.6rem; border-radius: 12px; text-transform: uppercase;">
+                                ✨ System Match</div>
+                            <span class="ml-match-label"
+                                style="display: block; font-size: 0.75rem; font-weight: 700; color: #6d28d9; text-transform: uppercase; margin-bottom: 0.3rem;">Your
+                                Lost Pet Report</span>
+                            <p class="ml-pet-name"
+                                style="font-size: 1.1rem; font-weight: bold; color: #1e293b; margin: 0 0 0.2rem 0;">{{
+                                ml_lost_report.pet_name }} ({{ ml_lost_report.breed|default:"Unknown Breed" }})</p>
+                            <p class="ml-pet-details" style="font-size: 0.85rem; color: #64748b; margin: 0;">Lost on {{
+                                ml_lost_report.date_lost }} • {{ ml_lost_report.base_report.location }}</p>
+                            <input type="hidden" name="lost_report_id" value="{{ ml_lost_report.id }}">
+                            <input type="hidden" name="claim_type" value="ML Match">
+                        </div>
+
+                        <div class="modal-warn-box"
+                            style="background: #fef2f2; border-left: 4px solid #ef4444; padding: 1rem; font-size: 0.85rem; color: #991b1b; line-height: 1.5; border-radius: 0 8px 8px 0;">
+                            <strong>Important:</strong> All claims are manually reviewed. Submitting false claims to
+                            acquire someone else's pet will result in a permanent ban.
+                        </div>
+
+                        {% else %}
+                        <p class="modal-desc">You are claiming ownership of the pet in this sighting report. To proceed,
+                            please link this sighting to your existing lost pet report.</p>
+
+                        <div class="modal-select-wrap">
+                            <label class="modal-select-label">Select Your Lost Pet Report</label>
+                            <select name="lost_report_id" required class="modal-select">
+                                <option value="" disabled selected>Choose a pet...</option>
+                                {% for lp in my_lost_pets %}
+                                <option value="{{ lp.id }}">{{ lp.pet_name }} ({{ lp.breed|default:"Unknown Breed" }}) -
+                                    Lost {{ lp.date_lost }}</option>
+                                {% empty %}
+                                <option value="" disabled>You have no active lost pet reports.</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <input type="hidden" name="claim_type" value="Manual">
+
+                        <div class="modal-info-box">
+                            Haven't posted about your lost pet yet?
+                            <a href="{% url 'post_pet' %}">Create a Lost Report ➔</a>
+                        </div>
+
+                        <div class="modal-warn-box">
+                            <strong>Important:</strong> All claims are manually reviewed. Submitting false claims to
+                            acquire someone else's pet will result in a permanent ban.
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="modal-footer"
+                        style="padding: 1rem 1.5rem 1.5rem; display: flex; gap: 1rem; justify-content: flex-end;">
+                        <button type="button" onclick="document.getElementById('claimModal').style.display='none'"
+                            class="modal-btn-cancel-sm"
+                            style="{% if ml_lost_report %}padding: 0.85rem 1.5rem; border: 1px solid #cbd5e1; border-radius: 8px; font-weight: bold; background: white; color: #475569;{% endif %}">
+                            {% if ml_lost_report %}Not My Pet{% else %}Cancel{% endif %}</button>
+                        <button type="submit" class="btn-primary modal-btn-submit-sm"
+                            style="{% if ml_lost_report %} padding: 0.85rem 1.5rem; border: none; border-radius: 8px; font-weight: bold;{% endif %}">
+                            {% if ml_lost_report %}Yes, Claim Ownership{% else %}Submit for Verification{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+
+        <div id="contactModal" class="modal-overlay">
+            <div class="modal modal-sm">
+                <div class="modal-header modal-header-shaded">
+                    <h2>Contact Info</h2>
+                    <button type="button" onclick="document.getElementById('contactModal').style.display='none'"
+                        class="modal-close">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    {% if report.sighting_report and report.sighting_report.in_custody %}
+                        {% with contact=report.sighting_report.current_custodian role="Rescuer / Custodian" %}
+                        <div class="contact-header">
+                            <h3 class="contact-name">{{ contact.username }}</h3>
+                            <p class="contact-role">{{ role }}</p>
+                        </div>
+                        <div class="contact-card">
+                            <div class="contact-row">
+                                <span class="contact-field-label">Phone Number</span>
+                                <span class="contact-field-value">{{ contact.phone_number|default:"No phone number provided" }}</span>
+                            </div>
+                            <div class="contact-row">
+                                <span class="contact-field-label">Email Address</span>
+                                <span class="contact-field-value">{{ contact.email|default:"No email provided" }}</span>
+                            </div>
+                        </div>
+                        {% endwith %}
+                    {% else %}
+                        {% with contact=report.author %}
+                        <div class="contact-header">
+                            <h3 class="contact-name">{{ contact.username }}</h3>
+                            <p class="contact-role">
+                                {% if report.report_type == 'Lost' %}Pet Owner
+                                {% elif report.report_type == 'Adoption' %}Pet Owner / Shelter
+                                {% else %}Spotter{% endif %}
+                            </p>
+                        </div>
+                        <div class="contact-card">
+                            <div class="contact-row">
+                                <span class="contact-field-label">Phone Number</span>
+                                <span class="contact-field-value">{{ contact.phone_number|default:"No phone number provided" }}</span>
+                            </div>
+                            <div class="contact-row">
+                                <span class="contact-field-label">Email Address</span>
+                                <span class="contact-field-value">{{ contact.email|default:"No email provided" }}</span>
+                            </div>
+                        </div>
+                        {% endwith %}
+                    {% endif %}
+
+                    <div class="contact-note">
+                        Please reach out directly using the contact details above to discuss this report.
+                    </div>
+                </div>
+
+                <div class="modal-footer modal-footer-full">
+                    <button type="button" onclick="document.getElementById('contactModal').style.display='none'"
+                        class="btn-primary modal-btn-close-full">Close</button>
+                </div>
+            </div>
+        </div>
+
+        {% if report.sighting_report and report.sighting_report.in_custody and report.sighting_report.current_custodian != report.author %}
+        <div id="spotterModal" class="modal-overlay">
+            <div class="modal modal-sm">
+                <div class="modal-header modal-header-shaded">
+                    <h2>Contact Spotter</h2>
+                    <button type="button" onclick="document.getElementById('spotterModal').style.display='none'"
+                        class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="contact-header">
+                        <h3 class="contact-name">{{ report.author.username }}</h3>
+                        <p class="contact-role">Original Spotter</p>
+                    </div>
+                    <div class="contact-card">
+                        <div class="contact-row">
+                            <span class="contact-field-label">Phone Number</span>
+                            <span class="contact-field-value">{{ report.author.phone_number|default:"No phone number provided" }}</span>
+                        </div>
+                        <div class="contact-row">
+                            <span class="contact-field-label">Email Address</span>
+                            <span class="contact-field-value">{{ report.author.email|default:"No email provided" }}</span>
+                        </div>
+                    </div>
+                    <div class="contact-note">
+                        Please reach out to the original spotter to clarify sight location or initial condition.
+                    </div>
+                </div>
+                <div class="modal-footer modal-footer-full">
+                    <button type="button" onclick="document.getElementById('spotterModal').style.display='none'"
+                        class="btn-primary modal-btn-close-full">Close</button>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+{% endblock %}

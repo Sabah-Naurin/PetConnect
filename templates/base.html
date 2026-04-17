@@ -1,0 +1,79 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}PetConnect Dashboard{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<header>
+    <div class="logo"><a href="{% url 'index' %}">🐾 PetConnect</a></div>
+    
+    <div class="header-controls">
+        <form action="{% url 'index' %}" method="get" class="header-search-form" style="display:flex; gap: 10px; align-items:center;">
+            <select name="loc" class="location-select" onchange="this.form.submit()">
+                <option value="all">📍 All Locations</option>
+                {% for loc_val, loc_label in location_choices %}
+                    <option value="{{ loc_val }}" {% if request.GET.loc == loc_val %}selected{% elif not request.GET.loc and user.is_authenticated and user.location == loc_val %}selected{% endif %}>📍 {{ loc_label }}</option>
+                {% endfor %}
+            </select>
+            <input type="text" name="q" class="search-bar" placeholder="Search pets, breeds, or status..." value="{{ request.GET.q|default_if_none:'' }}">
+        </form>
+    </div>
+
+    <div class="header-actions">
+        {% if user.is_authenticated %}
+            {% if user.is_staff or user.is_superuser %}
+                <a href="{% url 'custom_admin_dashboard' %}" class="btn-ghost header-welcome-link">Welcome, {{ user.first_name|default:user.username }}</a>
+            {% else %}
+                <a href="{% url 'dashboard' %}" class="btn-ghost header-welcome-link">Welcome, {{ user.first_name|default:user.username }}</a>
+            {% endif %}
+        {% else %}
+            <a href="{% url 'login' %}" class="btn-ghost">Sign In</a>
+        {% endif %}
+        <a href="{% url 'post_pet' %}" class="btn-post">Post a Pet</a>
+    </div>
+</header>
+
+<div class="container">
+    <aside class="sidebar-aside">
+        {% block sidebar %}
+        <nav>
+            <ul>
+                <li class="{% if request.resolver_match.url_name == 'index' %}active{% endif %}"><a href="{% url 'index' %}">All Feed</a></li>
+                <li class="{% if request.resolver_match.url_name == 'lost_pets' %}active{% endif %}"><a href="{% url 'lost_pets' %}">Lost Pets</a></li>
+                <li class="{% if request.resolver_match.url_name == 'sightings' %}active{% endif %}"><a href="{% url 'sightings' %}">Sightings</a></li>
+                <li class="{% if request.resolver_match.url_name == 'rescues' %}active{% endif %}"><a href="{% url 'rescues' %}">Rescue Requests</a></li>
+                <li class="{% if request.resolver_match.url_name == 'adoptions' %}active{% endif %}"><a href="{% url 'adoptions' %}">Adoptions</a></li>
+            </ul>
+        </nav>
+        {% endblock %}
+        
+        {% if user.is_authenticated %}
+        <div class="sidebar-logout">
+            <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn-ghost btn-logout"><span class="btn-logout-icon">🚪</span> Log Out</button>
+            </form>
+        </div>
+        {% endif %}
+    </aside>
+
+    <main>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        
+        {% block content %}{% endblock %}
+    </main>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Fund Request - PetConnect{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/fund_detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="fund-back-link-wrapper">
+    <a href="{% url 'report_detail' fund.sighting_report.base_report.id %}" class="fund-back-link">⬅ Back to Pet Report</a>
+</div>
+
+<div class="post-container">
+    <div class="post-image">
+        <span class="status-badge">Rescue / Urgent</span>
+        {% if fund.sighting_report.base_report.image %}
+            <img src="{{ fund.sighting_report.base_report.image.url }}" alt="Pet Image">
+        {% else %}
+            <span class="paw-placeholder">🐾</span>
+        {% endif %}
+    </div>
+    
+    <div class="post-content">
+        <h1>Medical Fund for {{ fund.sighting_report.base_report.species|title }}</h1>
+        <div class="post-meta">Organized by {{ fund.sighting_report.current_custodian.username }} • Posted {{ fund.sighting_report.base_report.timestamp|date:"M d, Y" }}</div>
+
+        <div class="origin-link">
+            <span class="origin-link-icon">🔗</span>
+            <div class="origin-link-text">
+                This fund request is linked to: <a href="{% url 'report_detail' fund.sighting_report.base_report.id %}">Rescue Report #{{ fund.sighting_report.base_report.id }} (Spotted in {{ fund.sighting_report.base_report.location }})</a>
+            </div>
+        </div>
+
+        <div class="progress-wrapper">
+            <div class="progress-stats">
+                <span class="progress-raised">{{ fund.current_amount }} BDT Raised</span>
+                <span class="progress-goal">Goal: {{ fund.target_amount }} BDT</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: {{ progress_percent }}%;"></div>
+            </div>
+        </div>
+
+        <div class="data-grid">
+            <div class="data-item">
+                <span class="data-label">Current Condition</span>
+                <span class="data-value data-value-danger">{{ fund.current_condition }}</span>
+            </div>
+            <div class="data-item">
+                <span class="data-label">Location</span>
+                <span class="data-value">{{ fund.sighting_report.base_report.location }}</span>
+            </div>
+            <div class="data-item">
+                <span class="data-label">Medical Proof</span>
+                {% if fund.prescription_image %}
+                    <a href="{{ fund.prescription_image.url }}" target="_blank" class="proof-link">📄 View Vet Prescription/Bill</a>
+                {% else %}
+                    <span class="data-value">Pending Upload</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="rescuers-note-section">
+            <span class="data-label rescuers-note-label">Rescuer's Note &amp; Context</span>
+            <p class="rescuers-note-text">"{{ fund.rescuers_note }}"</p>
+        </div>
+
+        {% if request.user != fund.sighting_report.current_custodian %}
+        <div class="donation-box">
+            <h3>💖 Help Fund this Rescue</h3>
+            
+            <div class="instruction-step">
+                <strong>Step 1:</strong> Send your donation via bKash (Send Money) to the rescuer's number: <span class="bkash-number">{{ fund.sighting_report.current_custodian.phone_number|default:"No Phone Provided" }}</span>
+            </div>
+            <div class="instruction-step">
+                <strong>Step 2:</strong> Enter your transaction details below. The progress bar will update once the rescuer verifies receipt.
+            </div>
+
+            <form action="{% url 'submit_donation' fund.id %}" method="POST">
+                {% csrf_token %}
+                <div class="input-group">
+                    <input type="text" name="trx_id" placeholder="bKash TrxID (e.g., 8A7B6C5D)" required>
+                    <input type="number" name="amount" placeholder="Amount Sent (BDT)" step="0.01" required>
+                </div>
+                <button type="submit" class="btn-donate">Submit TrxID for Verification</button>
+            </form>
+            <div class="disclaimer">Fake TrxIDs will result in an account ban. Verification usually takes 1-2 hours.</div>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

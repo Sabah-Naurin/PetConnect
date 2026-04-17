@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Rescue Verification - PetConnect{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/rescue_verification.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="form-center">
+    <div class="form-container form-container-sm">
+        <h2>Verify Your Rescue</h2>
+        <p class="subtitle">Thank you for helping this pet! To ensure the pet's safety, we require photographic proof that you have securely rescued the animal.</p>
+        
+        <div class="pet-summary-card">
+            <div class="pet-summary-thumb">
+                {% if report.image %}
+                    <img src="{{ report.image.url }}" alt="{{ report.pet_name }}">
+                {% else %}
+                    <div class="pet-summary-thumb-placeholder">🐾</div>
+                {% endif %}
+            </div>
+            <div>
+                <strong class="pet-summary-title">Sighting Report #{{ report.id }}</strong>
+                <span class="pet-summary-sub">{{ report.species }} • {{ report.location }}</span>
+            </div>
+        </div>
+
+        <form action="{% url 'submit_rescue_verification' report.id %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="form-group full-width">
+                <label class="upload-label">Upload Proof of Rescue (Required)</label>
+                <p class="upload-hint">Please upload a clear, current photo of the rescued pet in your custody (e.g., in your home, vehicle, or a veterinary clinic).</p>
+                <input type="file" name="proof_image" accept="image/*" class="image-upload upload-input" required>
+            </div>
+            
+            <div class="warn-box">
+                <strong>Admin Verification Required:</strong> This rescue claim will be manually reviewed by our administrative team. Pet owners will not be notified until your proof has been verified.
+            </div>
+
+            <div class="button-group">
+                <a href="{% url 'report_detail' report.id %}" class="btn-cancel btn-cancel-link">Cancel</a>
+                <button type="submit" class="btn-submit">Submit Verification</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

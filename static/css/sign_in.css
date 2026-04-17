@@ -1,0 +1,17 @@
+/* ================================================
+   sign_in.css — Styles from sign_in.html
+   ================================================ */
+
+/* Form container variant */
+.form-container-signin { max-width: 400px; text-align: center; }
+
+/* Form group text-align left */
+.form-group-left { text-align: left; }
+.form-group-left-mb { text-align: left; margin-bottom: 1rem; }
+
+/* Submit button */
+.btn-submit-full { width: 100%; margin-top: 1.5rem; }
+
+/* Footer link row */
+.auth-footer { margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-muted); }
+.auth-footer a { color: var(--primary); font-weight: 600; text-decoration: none; }

@@ -1,0 +1,38 @@
+{% extends 'user_dashboard.html' %}
+{% load static %}
+
+{% block title %}Settings - PetConnect{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/settings.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="welcome-header settings-header">
+    <h1 class="welcome-title settings-title">Settings</h1>
+    <p class="welcome-subtitle settings-subtitle">Update your profile details.</p>
+</div>
+
+<div class="section-box settings-section-box">
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group settings-form-group">
+            {% for field in form %}
+                <div class="settings-field-wrap">
+                    <label class="settings-field-label">
+                        {{ field.label_tag }}
+                    </label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <div class="settings-field-error">
+                            {{ field.errors.as_text }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+        <button type="submit" class="btn-submit btn-submit-full">Save Changes</button>
+    </form>
+</div>
+{% endblock %}

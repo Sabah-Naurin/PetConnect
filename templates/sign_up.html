@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create Account - PetConnect{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/sign_up.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="form-center">
+    <div class="form-container form-container-signup">
+        <h2>Create an Account</h2>
+        <p class="subtitle">Join PetConnect and help our local community.</p>
+        
+        <form method="POST">
+            {% csrf_token %}
+            {% if form.errors %}
+                <div class="alert alert-error">Please correct the errors below.</div>
+            {% endif %}
+            
+            <div class="form-group form-group-left-mb">
+                {% for field in form %}
+                    <div class="field-wrap">
+                        <label class="field-label">
+                            {{ field.label_tag }}
+                        </label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="field-error">
+                                {{ field.errors.as_text }}
+                            </div>
+                        {% endif %}
+                        {% if field.help_text %}
+                            <div class="field-help">
+                                {{ field.help_text }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <button type="submit" class="btn-submit btn-submit-full">Sign Up</button>
+            <p class="auth-footer">
+                Already have an account? <a href="{% url 'login' %}">Sign In</a>
+            </p>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,55 @@
+/* Header welcome link */
+.header-welcome-link {
+    color: var(--text-muted);
+}
+
+/* Sidebar aside layout */
+.sidebar-aside {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: calc(100vh - 80px);
+    position: sticky;
+    top: 80px;
+}
+
+/* Sidebar logout area */
+.sidebar-logout {
+    margin-top: auto;
+    padding-top: 2rem;
+}
+
+/* Logout button */
+.btn-logout {
+    width: 100%;
+    text-align: left;
+    color: var(--danger);
+    font-family: inherit;
+    font-size: 1rem;
+}
+
+/* Logout button icon */
+.btn-logout-icon {
+    margin-right: 8px;
+}
+
+/* Back link wrapper */
+.back-link-wrapper {
+    max-width: 900px;
+    margin: 0 auto 1rem;
+}
+
+/* Back link */
+.back-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+/* Header search form */
+.header-search-form {
+    flex: 1;
+    max-width: 400px;
+    display: flex;
+}

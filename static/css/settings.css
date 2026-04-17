@@ -1,0 +1,46 @@
+/* ================================================
+   settings.css — Styles from settings.html
+   ================================================ */
+
+/* Page header */
+.settings-header { margin-bottom: 2.5rem; }
+.settings-title { margin-bottom: 0.5rem; font-size: 2.2rem; color: #0f172a; }
+.settings-subtitle { color: var(--text-muted); margin-top: 0; font-size: 1.1rem; }
+
+/* Section box override */
+.settings-section-box { max-width: 600px; }
+
+/* Form group layout */
+.settings-form-group { text-align: left; margin-bottom: 1.5rem; }
+.settings-field-wrap { margin-bottom: 1rem; }
+.settings-field-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text);
+}
+.settings-field-error { color: var(--danger); font-size: 0.85rem; margin-top: 0.4rem; }
+
+/* Submit full-width */
+.btn-submit-full { width: 100%; }
+
+/* Django auto-generated form inputs */
+.form-group input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.8rem 1rem;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 1rem;
+    background: #f8fafc;
+    transition: all 0.3s;
+    color: var(--text);
+}
+.form-group input:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: var(--white);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+}

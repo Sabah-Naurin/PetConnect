@@ -1,0 +1,56 @@
+/* ================================================
+   sign_up.css — Styles from sign_up.html
+   ================================================ */
+
+/* Form container variant */
+.form-container-signup { max-width: 500px; text-align: center; }
+
+/* Form group text-align & spacing */
+.form-group-left-mb { text-align: left; margin-bottom: 1rem; }
+
+/* Field inner wrapper */
+.field-wrap { margin-bottom: 1rem; }
+
+/* Field label */
+.field-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text);
+}
+
+/* Field error */
+.field-error { color: var(--danger); font-size: 0.85rem; margin-top: 0.4rem; }
+
+/* Field help text */
+.field-help { color: var(--text-muted); font-size: 0.8rem; margin-top: 0.3rem; }
+
+/* Submit button */
+.btn-submit-full { width: 100%; margin-top: 1.5rem; }
+
+/* Footer link row */
+.auth-footer { margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-muted); }
+.auth-footer a { color: var(--primary); font-weight: 600; text-decoration: none; }
+
+/* Django auto-generated form inputs */
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.8rem 1rem;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 1rem;
+    background: #f8fafc;
+    transition: all 0.3s;
+    color: var(--text);
+}
+.form-group input:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: var(--white);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+}

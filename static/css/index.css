@@ -1,0 +1,38 @@
+/* =============================================
+   index.css — Styles extracted from index.html
+   ============================================= */
+
+/* Page heading */
+.index-page-title {
+    margin-top: 0;
+    font-size: 2rem;
+    color: #0f172a;
+}
+
+/* Empty state placeholder icon */
+.empty-paw-icon {
+    color: var(--text-muted);
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+/* Card timestamp */
+.card-timestamp {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin: 0.5rem 0 0;
+}
+
+/* Empty state container */
+.empty-state {
+    grid-column: span 3;
+    text-align: center;
+    padding: 4rem;
+    color: var(--text-muted);
+}
+
+/* Empty state heading */
+.empty-state-title {
+    font-size: 1.2rem;
+    font-weight: 500;
+}

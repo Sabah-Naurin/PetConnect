@@ -1,0 +1,16 @@
+/* =============================================
+   post_a_pet.css — Styles from post_a_pet.html
+   ============================================= */
+
+/* Report type select – highlighted border */
+.report-type-select {
+    border-color: var(--primary);
+    border-width: 2px;
+}
+
+/* Photo upload group spacing */
+.report-type-group { margin-bottom: 2rem; }
+.photo-upload-group { margin-bottom: 1.5rem; }
+
+/* Initially hidden sections (toggled by JS) */
+.section-hidden { display: none; }

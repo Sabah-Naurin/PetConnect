@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Notifications - PetConnect{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/notifications.css' %}">
+{% endblock %}
+
+{% block sidebar %}
+<nav>
+    <ul class="sidebar-nav-list">
+        <li class="sidebar-nav-back">
+            <a href="{% url 'index' %}">⬅ Back to Public Feed</a>
+        </li>
+        <li>
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+        </li>
+        <li class="active">
+            <a href="{% url 'notifications' %}" class="sidebar-notif-link">
+                Notifications 
+            </a>
+        </li>
+        <li><a href="#">My Reports</a></li>
+        <li class="{% if request.resolver_match.url_name == 'settings' %}active{% endif %}"><a href="{% url 'settings' %}">Settings</a></li>
+    </ul>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="notif-page-header">
+    <h1 class="notif-page-title">Notification History</h1>
+    <p class="notif-page-subtitle">Review all your past alerts and pending actions.</p>
+</div>
+
+<div class="notif-list">
+    {% for notif in notifications %}
+        <div class="notif-card {% if notif.is_read %}notif-read{% else %}notif-unread{% endif %} {% if notif.notif_type == 'DONATION_REVIEW' or notif.notif_type == 'NEW_SIGHTING' %}urgent{% endif %}">
+            
+            <div class="notif-content">
+                <span class="{% if notif.is_read %}notif-icon-read{% else %}notif-icon-unread{% endif %}">
+                    {% if notif.notif_type == 'CLAIM_APPROVED' or notif.notif_type == 'RESCUE_CONFIRMED' %}✅
+                    {% elif notif.notif_type == 'CLAIM_REJECTED' or notif.notif_type == 'RESCUE_REJECTED' %}❌
+                    {% elif notif.notif_type == 'NEW_SIGHTING' %}📍
+                    {% elif notif.notif_type == 'FUND_ACTIVE' %}🏥
+                    {% elif notif.notif_type == 'DONATION_REVIEW' %}⏳
+                    {% elif notif.notif_type == 'DONATION_SUCCESS' %}💖
+                    {% else %}🔔{% endif %}
+                </span>
+
+                <div>
+                    <strong class="notif-title">
+                        {{ notif.get_notif_type_display }} 
+                        {% if not notif.is_read %}
+                            <span class="notif-new-badge">(New)</span>
+                        {% endif %}
+                    </strong>
+                    <p class="notif-message">{{ notif.message }}</p>
+                    <small class="notif-timestamp">{{ notif.timestamp|timesince }} ago</small>
+                </div>
+            </div>
+
+            {% if notif.notif_type == 'DONATION_REVIEW' %}
+                <button type="button" class="btn-view" 
+                        onclick="openDonationModal(
+                            '{{ notif.related_id }}', 
+                            '{{ notif.donation.donor.username }}', 
+                            '{{ notif.donation.trx_id }}', 
+                            '{{ notif.donation.amount }}',
+                            {% if notif.is_read %}true{% else %}false{% endif %},
+                            '/fund/{{ notif.donation.medical_fund_request_id }}/'
+                        )">
+                    {% if notif.is_read %}View Details{% else %}Verify TrxID{% endif %}
+                </button>
+            {% else %}
+                <a href="{{ notif.link }}" class="btn-view" onclick="markAsReadAndRedirect(event, {{ notif.id }}, this.href)">
+                    View Details
+                </a>
+            {% endif %}
+        </div>
+    {% empty %}
+        <div class="notif-empty">
+            <span class="notif-empty-icon">📭</span>
+            <h3 class="notif-empty-text">No notifications yet.</h3>
+        </div>
+    {% endfor %}
+</div>
+
+<div id="donationModal" class="modal-overlay">
+    <div class="modal-box">
+        
+        <div class="modal-header-row">
+            <h3 class="modal-title">Verify Donation</h3>
+            <button onclick="closeDonationModal()" class="modal-close-btn">&times;</button>
+        </div>
+        
+        <div class="modal-data-block">
+            <p class="modal-data-row"><strong>Donor:</strong> <span id="modalDonorName" class="modal-data-value"></span></p>
+            <p class="modal-data-row"><strong>TrxID:</strong> <span id="modalTrxId" class="modal-data-trx"></span></p>
+            <p class="modal-data-row"><strong>Amount:</strong> <span id="modalAmount" class="modal-data-amount"></span> BDT</p>
+        </div>
+        
+<form id="verifyForm" method="POST">
+            {% csrf_token %}
+            <div id="modalActionButtons" class="modal-action-buttons">
+                <button type="submit" name="action" value="approve" class="modal-btn modal-btn-approve modal-btn-flex">Approve</button>
+                <button type="submit" name="action" value="reject" class="modal-btn modal-btn-deny modal-btn-flex">Deny</button>
+            </div>
+        </form>
+        
+        <div id="modalProcessedState" class="modal-processed">
+            <p class="modal-processed-text">✔ Already Processed</p>
+            <a id="modalFundLink" href="#" class="modal-fund-link">Go to Fund Request Page &rarr;</a>
+        </div>
+        
+        <button onclick="closeDonationModal()" class="modal-btn modal-btn-cancel modal-btn-full">Cancel</button>
+    </div>
+</div>
+
+<script>
+function openDonationModal(donationId, donorName, trxId, amount, isProcessed, fundUrl) {
+    document.getElementById('verifyForm').action = `/verify-donation/${donationId}/`;
+    
+    document.getElementById('modalDonorName').innerText = donorName;
+    document.getElementById('modalTrxId').innerText = trxId;
+    document.getElementById('modalAmount').innerText = amount;
+
+    if (isProcessed) {
+        document.getElementById('modalActionButtons').style.display = 'none';
+        document.getElementById('modalProcessedState').style.display = 'block';
+        document.getElementById('modalFundLink').href = fundUrl;
+    } else {
+        document.getElementById('modalActionButtons').style.display = 'flex';
+        document.getElementById('modalProcessedState').style.display = 'none';
+    }
+
+    document.getElementById('donationModal').style.display = 'flex';
+}
+
+function closeDonationModal() {
+    document.getElementById('donationModal').style.display = 'none';
+}
+
+function markAsReadAndRedirect(event, notifId, destinationUrl) {
+    event.preventDefault(); 
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    fetch(`/api/notifications/${notifId}/read/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken,
+            'Content-Type': 'application/json'
+        }
+    }).then(() => {
+        window.location.href = destinationUrl;
+    }).catch(err => {
+        window.location.href = destinationUrl; 
+    });
+}
+</script>
+{% endblock %}
