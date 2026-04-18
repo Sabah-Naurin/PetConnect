@@ -53,8 +53,13 @@ def sighting_match_lost(sender, instance, created, **kwargs):
             return
             
         location = instance.base_report.location
-        candidates = LostReport.objects.filter(base_report__location=location, base_report__is_resolved=False)
-        print(f"[ML-Vision] Found {candidates.count()} candidate LostReports in '{location}'.")
+        species = instance.base_report.species
+        candidates = LostReport.objects.filter(
+            base_report__location=location, 
+            base_report__species=species,
+            base_report__is_resolved=False
+        )
+        print(f"[ML-Vision] Found {candidates.count()} candidate LostReports (Species: {species}, Location: {location}).")
         
         best_match, best_score = find_best_match(source_tensor, candidates)
         if best_match:
@@ -80,13 +85,15 @@ def lost_match_sighting(sender, instance, created, **kwargs):
             return
             
         location = instance.base_report.location
+        species = instance.base_report.species
         # Do not compare against sighting updates
         candidates = SightingReport.objects.filter(
             base_report__location=location, 
+            base_report__species=species,
             base_report__is_resolved=False,
             parent_report__isnull=True
         ).exclude(claims__approval_status='Approved')
-        print(f"[ML-Vision] Found {candidates.count()} candidate SightingReports in '{location}'.")
+        print(f"[ML-Vision] Found {candidates.count()} candidate SightingReports (Species: {species}, Location: {location}).")
         
         best_match, best_score = find_best_match(source_tensor, candidates)
         if best_match:
