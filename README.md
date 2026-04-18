@@ -1,17 +1,17 @@
 # 🐾 PetConnect
 
-**PetConnect** is an AI-powered hub designed to bridge the gap between pet owners, spotters, and rescuers. By combining real-time location activity with state-of-the-art Computer Vision, PetConnect helps reunite lost pets and facilitates life-saving rescues and adoptions.
+**PetConnect** is an AI-powered hub designed to bridge the gap between pet owners, spotters, and rescuers. By combining real-time location activity with Computer Vision, PetConnect helps reunite lost pets and facilitates life-saving rescues and adoptions.
 
 ---
 
-## ✨ Key Features
+## Key Features
 
-*   **🧠 ML-Powered Matching:** Uses DINOv2 vision models to find similarities between lost pet reports and new sightings automatically.
-*   **📍 Location-Based Feed:** Stay updated with pet activity specifically in your registered neighborhood.
-*   **🏥 Medical Fund Management:** Verified rescuers can request community funding for medical treatments, integrated with payment verification.
+*   **ML-Powered Matching:** Uses DINOv2 vision models to find similarities between lost pet reports and new sightings automatically.
+*   **Location-Based Feed:** Stay updated with pet activity specifically in your registered neighborhood.
+*   **Medical Fund Management:** Verified rescuers can request community funding for medical treatments, integrated with payment verification.
 *   **verified Rescue Workflow:** Official custody tracking ensures transparency from the moment a pet is spotted to when it is safely rescued.
-*   **🏡 Adoption Portal:** Seamless transition from rescue to finding a forever home.
-*   **🔔 Intelligent Notifications:** Real-time updates for matches, claim status, and donation verifications.
+*   **Adoption Portal:** Seamless transition from rescue to finding a forever home.
+*   **Intelligent Notifications:** Real-time updates for matches, claim status, and donation verifications.
 
 ---
 
@@ -55,7 +55,7 @@ Visit `http://127.0.0.1:8000` to see it in action!
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 - **Backend:** Django (Python)
 - **AI/ML:** PyTorch, Hugging Face Transformers (DINOv2)
 - **Frontend:** Vanilla CSS, JavaScript, Django Templates
@@ -63,7 +63,7 @@ Visit `http://127.0.0.1:8000` to see it in action!
 
 ---
 
-## 👥 Roles & Permissions
+## Roles & Permissions
 - **Pet Owner:** Can post lost reports, claim matches, and finalize adoptions.
 - **Spotter:** Can report sightings of pets without taking formal custody.
 - **Custodian/Rescuer:** Verified users who take physical custody of pets and manage their medical/rescue progress.
@@ -71,4 +71,3 @@ Visit `http://127.0.0.1:8000` to see it in action!
 
 ---
 
-*Made with ❤️ for animals everywhere.*
